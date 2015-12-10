@@ -1,10 +1,12 @@
 import time
 import telepot
+import unidecode
 
 from database_connection import DatabaseConnection
 
 
 class RelAgeBot(telepot.Bot):
+
     def __init__(self, token, host, dbname, user, password):
         self.bot = super(RelAgeBot, self).__init__(token)
         self.database = DatabaseConnection(host, dbname, user, password)
@@ -14,11 +16,9 @@ class RelAgeBot(telepot.Bot):
     def birth(self, chat_id, msg):
         tokens = msg["text"].split()
         if (len(tokens) > 1):
-            full_name = ""
-            for token in tokens:
-                if (token != "/birth"):
-                    full_name += token
-            self.birthdays[full_name] = 0
+            full_name = unidecode.unidecode(msg["text"].replace("/birth ", ""))
+            #TODO make this use database code
+
             self.bot.sendMessage(chat_id, full_name + " is born")
         else:
             self.bot.sendMessage(chat_id, "usage: /birth <name of person>")
@@ -27,6 +27,7 @@ class RelAgeBot(telepot.Bot):
         tokens = msg["text"].split()
         if (len(tokens) > 1):
             full_name = ""
+            #TODO make this use database code
             for token in tokens:
                 if (token != "/age"):
                     full_name += token
@@ -43,6 +44,7 @@ class RelAgeBot(telepot.Bot):
         tokens = msg["text"].split()
         if (len(tokens) > 1):
             full_name = ""
+            #TODO make this use database code
             for token in tokens:
                 if (token != "/kill"):
                     full_name += token
@@ -58,6 +60,7 @@ class RelAgeBot(telepot.Bot):
         tokens = msg["text"].split()
         if (len(tokens) > 1):
             full_name = ""
+            #TODO make this use database code
             for token in tokens:
                 if (token != "/birthday"):
                     full_name += token
@@ -78,8 +81,6 @@ class RelAgeBot(telepot.Bot):
         command = msg['text']
 
         print(msg)
-        print('Got command: %s' % command)
-        print(chat_id)
 
         if '/birthday' in command:
             self.birthday(chat_id, msg)

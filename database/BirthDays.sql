@@ -65,4 +65,4 @@ CREATE OR REPLACE FUNCTION remove_birthday(nameInput TEXT, chat_idInput BIGINT)
             chatID = chat_idInput;
 
     END;
-    $$ LANGUAGE plpgsql;
+    $$ LANGUAGE plpgsql; 

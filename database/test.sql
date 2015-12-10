@@ -1,1 +1,1 @@
-SELECT get_birthday()
+SELECT get_birthday('omer', 0)

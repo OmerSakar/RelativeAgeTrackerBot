@@ -5,11 +5,7 @@ password = 'QcD29pnSEitPud1GXPVA'
 
 class DatabaseConnection:
     def __init__(self, host, dbname, user, password):
-        config = "dbname='" + dbname \
-                 + "' user='" + user \
-                 + "' host='" + host \
-                 + "' password='" + password \
-                 + "'"
+        config = "dbname='{}' user='{}' host='{}' password='{}'".format(dbname, user, host, password)
         try:
             self.database = psycopg2.connect(config)
         except:

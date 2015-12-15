@@ -13,6 +13,8 @@ class DatabaseConnection:
 
     def execute_query(self, query):
         cursor = self.database.cursor()
+        result = None
+        print(query)
         try:
             cursor.execute(query)
             result = cursor.fetchall()
@@ -28,3 +30,14 @@ class DatabaseConnection:
             print("Database connetion closed.")
         else:
             print("Database connection not initialized")
+
+
+import time
+from QueryBuilder import QueryBuilder
+
+chat_id = 0
+unidecode_name = "omer"
+
+database = DatabaseConnection("aidup.ddns.net", "birthdays", "omer", password)
+result_query = database.execute_query(QueryBuilder.get_query(chat_id, unidecode_name))
+print("result: " + str(result_query) + "len: " + str(len(result_query)))

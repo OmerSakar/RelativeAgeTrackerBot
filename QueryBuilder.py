@@ -19,15 +19,14 @@ class QueryBuilder:
         query = "SELECT * FROM remove_birthday('{}', {});".format(name, chat_id)
         return query
 
-
-queryb = QueryBuilder.add_query(0, "hello", 10, 0, "F")
-print(queryb)
-
-queryb = QueryBuilder.update_query(0, "hello", 10)
-print(queryb)
-
-queryb = QueryBuilder.remove_query(0, "hello")
-print(queryb)
-
-queryb = QueryBuilder.get_query(0, "hello")
-print(queryb)
+# queryb = QueryBuilder.add_query(0, "hello", 10, 0, "F")
+# print(queryb)
+#
+# queryb = QueryBuilder.update_query(0, "hello", 10)
+# print(queryb)
+#
+# queryb = QueryBuilder.remove_query(0, "hello")
+# print(queryb)
+#
+# queryb = QueryBuilder.get_query(0, "hello")
+# print(queryb)

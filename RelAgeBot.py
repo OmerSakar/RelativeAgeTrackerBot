@@ -41,7 +41,7 @@ class RelAgeBot(telepot.Bot):
                 message = full_name + " is ambigious\n you could have meant:"
                 for row in result_query:
                     message += "\t" + row[2] + "\n"
-                self.bot.sendMessage(chat_id, msg)
+                self.bot.sendMessage(chat_id, message)
             else:
                 self.bot.sendMessage(chat_id,
                                      full_name + " does not exist yet \nUse /birth for " + full_name + " to exists")
@@ -62,7 +62,7 @@ class RelAgeBot(telepot.Bot):
                 message = full_name + " is ambigious\n you could have meant:"
                 for row in result_query:
                     message += "\t" + row[2] + "\n"
-                self.bot.sendMessage(chat_id, msg)
+                self.bot.sendMessage(chat_id, message)
             else:
                 self.bot.sendMessage(chat_id,
                                      full_name + " does not exist yet \nUse /birth for " + full_name + " to exists")
@@ -74,17 +74,39 @@ class RelAgeBot(telepot.Bot):
         if (len(tokens) > 1):
             full_name = msg["text"].replace("/birthday ", "")
             unidecode_name = unidecode.unidecode(full_name).lower().replace(' ', '')
-            result_query = self.database.execute_query(QueryBuilder.update_query(chat_id, unidecode_name, 1))
+
+            result_query = self.database.execute_query(QueryBuilder.get_query(chat_id, unidecode_name))
+            if len(result_query) == 1:
+                if time.time() - result_query[0][3] < 20:
+                    if not result_query[0][4]:
+                        self.bot.sendMessage(chat_id, "You already asked, try again in one hour")
+                        self.database.execute_query(QueryBuilder.update_query(chat_id, unidecode_name, 0, True))
+                        # TODO Still need a stored procedure to update the last modified field
+                    return
+            elif len(result_query) > 1:
+                message = full_name + " is ambigious\n you could have meant:"
+                for row in result_query:
+                    message += "\t" + row[2] + "\n"
+                self.bot.sendMessage(chat_id, message)
+                return
+            else:
+                self.bot.sendMessage(chat_id,
+                                     full_name + " does not exist yet \nUse /birth for " + full_name + " to exist")
+                return
+
+            result_query = self.database.execute_query(QueryBuilder.update_query(chat_id, unidecode_name, 1, False))
 
             if len(result_query) == 1:
                 age = result_query[0][2]
                 birthday_msg = "Whoooohoooooo! Happy birthday! " + full_name + " is now " + str(age) + " years old"
                 self.bot.sendMessage(chat_id, birthday_msg)
+
+
             elif len(result_query) > 1:
                 message = full_name + " is ambigious\n you could have meant:"
                 for row in result_query:
                     message += "\t" + row[2] + "\n"
-                self.bot.sendMessage(chat_id, msg)
+                self.bot.sendMessage(chat_id, message)
             else:
                 self.bot.sendMessage(chat_id,
                                      full_name + " does not exist yet \nUse /birth for " + full_name + " to exist")

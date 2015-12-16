@@ -34,8 +34,9 @@ CREATE OR REPLACE FUNCTION get_birthday(nameInput TEXT, chat_idInput BIGINT)
     END;
     $$ LANGUAGE plpgsql;
 
-DROP FUNCTION IF EXISTS update_birthday(nameInput TEXT, chat_idInput BIGINT, increment_by INT) CASCADE;
-CREATE OR REPLACE FUNCTION update_birthday(nameInput TEXT, chat_idInput BIGINT, increment_by INT)
+DROP FUNCTION IF EXISTS update_birthday(nameInput TEXT, chat_idInput BIGINT, increment_by INT, already_askedInput BOOLEAN ) CASCADE;
+CREATE OR REPLACE FUNCTION update_birthday(nameInput          TEXT, chat_idInput BIGINT, increment_by INT,
+                                           already_askedInput BOOLEAN)
    RETURNS TABLE(_chat_id             BIGINT,
                   _name                TEXT,
                   _age                 BIGINT,
@@ -43,7 +44,7 @@ CREATE OR REPLACE FUNCTION update_birthday(nameInput TEXT, chat_idInput BIGINT, 
                   _already_asked       BOOLEAN) AS $$
     BEGIN
       UPDATE BirthDays
-        SET age = age + increment_by
+      SET age = age + increment_by, already_asked = already_askedInput
         WHERE full_name = nameInput and
               chatID = chat_idInput;
         RETURN QUERY SELECT * FROM get_birthday(nameInput, chat_idInput);

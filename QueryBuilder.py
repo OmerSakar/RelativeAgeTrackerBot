@@ -6,8 +6,8 @@ class QueryBuilder:
         return query
 
     @staticmethod
-    def update_query(chat_id, name, incrementBy):
-        query = "SELECT * FROM update_birthday('{}', {}, {});".format(name, chat_id, incrementBy)
+    def update_query(chat_id, name, incrementBy, already_asked):
+        query = "SELECT * FROM update_birthday('{}', {}, {}, {});".format(name, chat_id, incrementBy, already_asked)
         return query
 
     @staticmethod

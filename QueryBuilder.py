@@ -1,7 +1,8 @@
 class QueryBuilder:
     @staticmethod
     def add_query(chat_id, name, age, last_modified, asked):
-        query = "SELECT * FROM add_birthday({}, '{}', {}, {}, '{}');".format(chat_id, name, age, last_modified, asked)
+        query = "SELECT * FROM add_birthday({}, '{}', {}, {}, {});".format(chat_id, name, age, int(last_modified),
+                                                                           asked)
         return query
 
     @staticmethod

@@ -2,6 +2,7 @@
 # Created by https://www.gitignore.io/api/intellij,jetbrains,pycharm,pycharm,python,windows,linux,osx
 
 # Ignore config.ini
+/config.ini
 config.ini
 
 ### Intellij ###

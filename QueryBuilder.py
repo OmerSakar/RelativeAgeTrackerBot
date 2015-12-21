@@ -6,24 +6,35 @@ class QueryBuilder:
         return query
 
     @staticmethod
-    def update_query(chat_id, name, incrementBy, already_asked):
-        query = "SELECT * FROM update_birthday('{}', {}, {}, {});".format(name, chat_id, incrementBy, already_asked)
+    def update_age(chat_id, name, incrementBy):
+        query = "SELECT * FROM update_age({}, '{}', {});".format(chat_id, name, incrementBy)
+        return query
+
+    @staticmethod
+    def update_already_asked(chat_id, name, already_asked):
+        query = "SELECT * FROM update_already_asked({}, '{}', {});".format(chat_id, name, already_asked)
+        return query
+
+    @staticmethod
+    def update_last_modified(chat_id, name, last_modified):
+        query = "SELECT * FROM update_last_modified({}, '{}', {});".format(chat_id, name, last_modified)
         return query
 
     @staticmethod
     def get_query(chat_id, name):
-        query = "SELECT * FROM get_birthday('{}', {});".format(name, chat_id)
+        query = "SELECT * FROM get_birthday({},'{}');".format(chat_id, name)
         return query
 
     @staticmethod
     def remove_query(chat_id, name):
-        query = "SELECT * FROM remove_birthday('{}', {});".format(name, chat_id)
+        query = "SELECT * FROM remove_birthday({},'{}');".format(chat_id, name)
         return query
 
+#
 # queryb = QueryBuilder.add_query(0, "hello", 10, 0, "F")
 # print(queryb)
-#
-# queryb = QueryBuilder.update_query(0, "hello", 10)
+
+# queryb = QueryBuilder.update_age(0, "hello", 10)
 # print(queryb)
 #
 # queryb = QueryBuilder.remove_query(0, "hello")

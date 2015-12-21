@@ -12,6 +12,8 @@ class RelAgeBot(telepot.Bot):
         self.database = DatabaseConnection(host, dbname, user, password)
         self.bot.notifyOnMessage(self.handle)
         self.birthdays = {}
+        self.count = 0
+        self.timer = time.time()
 
     def birth(self, chat_id, msg):
         tokens = msg["text"].split()
@@ -117,7 +119,17 @@ class RelAgeBot(telepot.Bot):
         chat_id = msg['chat']['id']
         command = msg['text']
 
-        print(msg['text'])
+        print(msg)
+
+        if time.time() - self.timer > 0.9:
+            self.timer = time.time()
+            self.count = 0
+        elif self.count < 39:
+            self.count += 1
+        else:
+            self.bot.sendMessage(chat_id, "You killed me with message ID: " + msg["message_id"])
+            exit()
+
 
         if '/birthday' in command:
             self.birthday(chat_id, msg)

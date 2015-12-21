@@ -1,9 +1,8 @@
 
 # Created by https://www.gitignore.io/api/intellij,jetbrains,pycharm,pycharm,python,windows,linux,osx
 
-# Ignore config.ini
-/config.ini
-config.ini
+### Ignore config.ini ###
+*.ini
 
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm

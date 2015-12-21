@@ -18,7 +18,7 @@ class RelAgeBot(telepot.Bot):
         if (len(tokens) > 1):
             full_name = msg["text"].replace("/birth ", "")
             unidecode_name = unidecode.unidecode(full_name).lower().replace(' ', '')
-            result = self.database.execute_query(QueryBuilder.add_query(chat_id, unidecode_name, 0, time.time(), False))
+            result = self.database.execute_query(QueryBuilder.add_query(chat_id, unidecode_name, 0, 0, False))
             if result == "23505":
                 self.bot.sendMessage(chat_id, full_name + " already exists in some sort of way or shape")
             elif result == "25P02":
@@ -77,11 +77,10 @@ class RelAgeBot(telepot.Bot):
 
             result_query = self.database.execute_query(QueryBuilder.get_query(chat_id, unidecode_name))
             if len(result_query) == 1:
-                if time.time() - result_query[0][3] < 20:
+                if time.time() - result_query[0][3] < 60 and result_query[0][3] is not 0:
                     if not result_query[0][4]:
-                        self.bot.sendMessage(chat_id, "You already asked, try again in one hour")
-                        self.database.execute_query(QueryBuilder.update_query(chat_id, unidecode_name, 0, True))
-                        # TODO Still need a stored procedure to update the last modified field
+                        self.bot.sendMessage(chat_id, "You already asked, try again in one minute")
+                        self.database.execute_query(QueryBuilder.update_already_asked(chat_id, unidecode_name, True))
                     return
             elif len(result_query) > 1:
                 message = full_name + " is ambigious\n you could have meant:"
@@ -93,8 +92,9 @@ class RelAgeBot(telepot.Bot):
                 self.bot.sendMessage(chat_id,
                                      full_name + " does not exist yet \nUse /birth for " + full_name + " to exist")
                 return
-
-            result_query = self.database.execute_query(QueryBuilder.update_query(chat_id, unidecode_name, 1, False))
+            self.database.execute_query(QueryBuilder.update_already_asked(chat_id, unidecode_name, False))
+            self.database.execute_query(QueryBuilder.update_last_modified(chat_id, unidecode_name, int(time.time())))
+            result_query = self.database.execute_query(QueryBuilder.update_age(chat_id, unidecode_name, 1))
 
             if len(result_query) == 1:
                 age = result_query[0][2]
@@ -117,7 +117,7 @@ class RelAgeBot(telepot.Bot):
         chat_id = msg['chat']['id']
         command = msg['text']
 
-        print(msg)
+        print(msg['text'])
 
         if '/birthday' in command:
             self.birthday(chat_id, msg)

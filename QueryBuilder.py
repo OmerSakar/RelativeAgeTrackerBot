@@ -29,7 +29,6 @@ class QueryBuilder:
     def remove_query(chat_id, name):
         query = "SELECT * FROM remove_birthday({},'{}');".format(chat_id, name)
         return query
-
 #
 # queryb = QueryBuilder.add_query(0, "hello", 10, 0, "F")
 # print(queryb)

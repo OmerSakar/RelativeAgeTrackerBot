@@ -1,7 +1,5 @@
 import psycopg2
 
-password = 'QcD29pnSEitPud1GXPVA'
-
 
 class DatabaseConnection:
     def __init__(self, host, dbname, user, password):

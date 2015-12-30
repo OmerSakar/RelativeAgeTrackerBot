@@ -1,27 +1,10 @@
 import telepot
 
+from RelAgeBot import get_configurations
 from RelAgeBot import RelAgeBot
 import time
-import configparser
 
-
-def getConfigurations(path, section):
-    parser = configparser.ConfigParser()
-    parser.read(path)
-    options = parser.options(section)
-    dict1 = {}
-    for option in options:
-        try:
-            dict1[option] = parser.get(section, option)
-            if dict1[option] == -1:
-                print("skip: %s" % option)
-        except:
-            print("exception on %s!" % option)
-            dict1[option] = None
-    return dict1
-
-
-configs = getConfigurations("./config.ini", "Default Settings")
+configs = get_configurations("./config.ini", "Default Settings")
 token = (configs["token"], "token")
 host = (configs["host"], "host")
 dbname = (configs["dbname"], "dbname")

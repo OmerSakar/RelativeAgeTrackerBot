@@ -1,13 +1,32 @@
 import time
 import telepot
 import unidecode
+import configparser
+from psycopg2 import OperationalError
+
 from QueryBuilder import QueryBuilder
 from database_connection import DatabaseConnection
 
 
-class RelAgeBot(telepot.Bot):
+def get_configurations(path, section):
+    parser = configparser.ConfigParser()
+    parser.read(path)
+    options = parser.options(section)
+    dict1 = {}
+    for option in options:
+        try:
+            dict1[option] = parser.get(section, option)
+            if dict1[option] == -1:
+                print("skip: %s" % option)
+        except configparser.Error:
+            print("exception on %s!" % option)
+            dict1[option] = None
+    return dict1
 
+
+class RelAgeBot(telepot.Bot):
     def __init__(self, token, host, dbname, user, password):
+        super().__init__(token)
         self.bot = telepot.Bot(token)
         self.database = DatabaseConnection(host, dbname, user, password)
         self.bot.notifyOnMessage(self.handle)
@@ -15,9 +34,15 @@ class RelAgeBot(telepot.Bot):
         self.count = 0
         self.timer = time.time()
 
+        self.token = token
+        self.host = host
+        self.dbname = dbname
+        self.user = user
+        self.password = password
+
     def birth(self, chat_id, msg):
         tokens = msg["text"].split()
-        if (len(tokens) > 1):
+        if len(tokens) > 1:
             full_name = msg["text"].replace("/birth ", "")
             unidecode_name = unidecode.unidecode(full_name).lower().replace(' ', '')
             result = self.database.execute_query(QueryBuilder.add_query(chat_id, unidecode_name, 0, 0, False))
@@ -32,7 +57,7 @@ class RelAgeBot(telepot.Bot):
 
     def age(self, chat_id, msg):
         tokens = msg["text"].split()
-        if (len(tokens) > 1):
+        if len(tokens) > 1:
             full_name = msg["text"].replace("/age ", "")
             unidecode_name = unidecode.unidecode(full_name).lower().replace(' ', '')
             result_query = self.database.execute_query(QueryBuilder.get_query(chat_id, unidecode_name))
@@ -52,7 +77,7 @@ class RelAgeBot(telepot.Bot):
 
     def kill(self, chat_id, msg):
         tokens = msg["text"].split()
-        if (len(tokens) > 1):
+        if len(tokens) > 1:
             full_name = msg["text"].replace("/kill ", "")
             unidecode_name = unidecode.unidecode(full_name).lower().replace(' ', '')
             result_query = self.database.execute_query(QueryBuilder.remove_query(chat_id, unidecode_name))
@@ -73,7 +98,7 @@ class RelAgeBot(telepot.Bot):
 
     def birthday(self, chat_id, msg):
         tokens = msg["text"].split()
-        if (len(tokens) > 1):
+        if len(tokens) > 1:
             full_name = msg["text"].replace("/birthday ", "")
             unidecode_name = unidecode.unidecode(full_name).lower().replace(' ', '')
 
@@ -103,7 +128,6 @@ class RelAgeBot(telepot.Bot):
                 birthday_msg = "Whoooohoooooo! Happy birthday! " + full_name + " is now " + str(age) + " years old"
                 self.bot.sendMessage(chat_id, birthday_msg)
 
-
             elif len(result_query) > 1:
                 message = full_name + " is ambigious\n you could have meant:"
                 for row in result_query:
@@ -114,6 +138,18 @@ class RelAgeBot(telepot.Bot):
                                      full_name + " does not exist yet \nUse /birth for " + full_name + " to exist")
         else:
             self.bot.sendMessage(chat_id, "usage /birthday <name of person>")
+
+    def check_connection(self):
+        try:
+            self.database.database.isolation_level
+        except OperationalError:
+            print("Database connection reestablished at {} time", str(time.time()))
+            configs = get_configurations("./config.ini", "Default Settings")
+            host = (configs["host"], "host")
+            dbname = (configs["dbname"], "dbname")
+            username = (configs["username"], "username")
+            password = (configs["password"], "password")
+            self.database = DatabaseConnection(host[0], dbname[0], username[0], password[0])
 
     def handle(self, msg):
         chat_id = msg['chat']['id']
@@ -130,6 +166,7 @@ class RelAgeBot(telepot.Bot):
             self.bot.sendMessage(chat_id, "You killed me with message ID: " + msg["message_id"])
             exit()
 
+        self.check_connection()
 
         if '/birthday' in command:
             self.birthday(chat_id, msg)
